@@ -136,7 +136,6 @@ FUNCTION viewTreatment():
 END FUNCTION
 
 
-
 FUNCTION freeAll():
     FREE all memory allocated for patient_list and appointment_list
 END FUNCTION
