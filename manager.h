@@ -25,6 +25,7 @@ typedef struct {
     char phone[MAX_PATIENT_PHONE];
 } Patient;
 
+
 typedef struct {
     char id[MAX_TREATMENT_ID];
     char patientId[MAX_PATIENT_ID];
