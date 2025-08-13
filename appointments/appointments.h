@@ -19,6 +19,5 @@ void deleteAppointment(void);
 
 void loadAppointmentsFromCSV(const char *filename);
 
-void saveAppointmentsToCSV(const char *filename);
 
 #endif 
