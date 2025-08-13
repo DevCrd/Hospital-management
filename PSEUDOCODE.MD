@@ -103,12 +103,39 @@ FUNCTION viewAppointments():
         DISPLAY appointment info
 END FUNCTION
 
-FUNCTION viewTreatmentHistory():
+FUNCTION AddTreatment():
     PROMPT for patient_id
-    FOR each Appointment in appointment_list:
-        IF appointment.patient_id == patient_id:
-            DISPLAY date, doctor_name, description, status
+    IF patient exists:
+        PROMPT for date, description
+        GENERATE unique Treatment_id
+        CREATE treatment struct (status = "ACTIVE")
+        APPEND to treatment_list
+    ELSE:
+        DISPLAY "Patient not found"
 END FUNCTION
+
+FUNCTION UPDATETreatment():
+    PROMPT for patient_id
+    SEARCH patient_list for matching id
+    IF found:
+        prompt for Treatment_id
+            IF found:
+                UPDATE treatment struct (status = "INACTIVE")
+            ELSE:
+                DISPLAY "Treatment not found"
+                return 1;
+    ELSE:
+        DISPLAY "Patient not found"
+END FUNCTION
+
+FUNCTION viewTreatment():
+    PROMPT for patient_id
+    FOR each treatment in treatment_list:
+        IF treatment.patient_id == patient_id:
+            DISPLAY date, description, status
+END FUNCTION
+
+
 
 FUNCTION freeAll():
     FREE all memory allocated for patient_list and appointment_list
