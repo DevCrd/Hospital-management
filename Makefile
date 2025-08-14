@@ -4,17 +4,17 @@ TARGET  = hpms
 
 # Source files from all modules
 SOURCES = main.c manager.c \
-          patients/patient.c \
-          appointments/appointment.c \
-          treatments/treatment.c
+          patients/patients.c \
+          appointments/appointments.c \
+          treatments/treatments.c
 
 OBJECTS = $(SOURCES:.c=.o)
 
 # Test sources
 TEST_SOURCES = tests/test_data.c manager.c \
-               patients/patient.c \
-               appointments/appointment.c \
-               treatments/treatment.c
+               patients/patients.c \
+               appointments/appointments.c \
+               treatments/treatments.c
 TEST_OBJECTS = $(TEST_SOURCES:.c=.o)
 TEST_TARGET  = hpms_test
 

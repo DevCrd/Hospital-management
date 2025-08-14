@@ -8,35 +8,37 @@ int patientCount = 0;
 
 void addPatient(void) {
     FILE *fp = fopen(PATIENTS_FILE, "r");
-    int lastId = 0;
+    int lastIdNum = 0;
 
     if (fp) {
         Patient temp;
-        while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                      &temp.id, temp.name, &temp.age, temp.gender,
+        while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%19[^,],%19[^,],%19[^\n]\n",
+                      temp.id, temp.name, &temp.age, temp.gender,
                       temp.address, temp.phone, temp.email) == 7) {
-            if (temp.id > lastId) {
-                lastId = temp.id;
+            // Extract numeric part of ID (skip 'P')
+            int num = atoi(temp.id + 1);
+            if (num > lastIdNum) {
+                lastIdNum = num;
             }
         }
         fclose(fp);
     }
 
     Patient patient;
-    patient.id = lastId + 1;
+    sprintf(patient.id, "P%03d", lastIdNum + 1); 
 
     printf("Enter Name: ");
-    scanf("%s", patient.name);
+    scanf(" %99[^\n]", patient.name);
     printf("Enter Age: ");
     scanf("%d", &patient.age);
     printf("Enter Gender: ");
-    scanf("%s", patient.gender);
+    scanf(" %19s", patient.gender);
     printf("Enter Address: ");
-    scanf("%s", patient.address);
+    scanf(" %19[^\n]", patient.address);
     printf("Enter Phone: ");
-    scanf("%s", patient.phone);
+    scanf(" %19s", patient.phone);
     printf("Enter Email: ");
-    scanf("%s", patient.email);
+    scanf(" %19s", patient.email);
 
     fp = fopen(PATIENTS_FILE, "a");
     if (!fp) {
@@ -44,12 +46,12 @@ void addPatient(void) {
         return;
     }
 
-    fprintf(fp, "%d,%s,%d,%s,%s,%s,%s\n",
+    fprintf(fp, "%s,%s,%d,%s,%s,%s,%s\n",
             patient.id, patient.name, patient.age, patient.gender,
             patient.address, patient.phone, patient.email);
 
     fclose(fp);
-    printf("Patient added successfully with ID: %d\n", patient.id);
+    printf("Patient added successfully with ID: %s\n", patient.id);
 }
 
 void viewPatients(void) {
@@ -61,13 +63,14 @@ void viewPatients(void) {
 
     Patient patient;
     printf("\n--- Patient List ---\n");
-    while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                  &patient.id, patient.name, &patient.age, patient.gender,
-                  patient.address, patient.phone, patient.email) == 7) {
-        printf("ID: %d | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
-               patient.id, patient.name, patient.age, patient.gender,
-               patient.address, patient.phone, patient.email);
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%19[^,],%19[^,],%19[^\n]\n",
+              patient.id, patient.name, &patient.age, patient.gender,
+                patient.address, patient.phone, patient.email) == 7) {
+        printf("ID: %s | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
+            patient.id, patient.name, patient.age, patient.gender,
+            patient.address, patient.phone, patient.email);
     }
+
 
     fclose(fp);
 }

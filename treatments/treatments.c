@@ -2,8 +2,7 @@
 
 #define TREATMENTS_FILE "treatments.csv"
 
-// Data storage
-Treatment treatments[100];
+Treatment treatments[MAX_TREATMENTS];
 int treatmentCount = 0;
 
 // Utility
@@ -12,45 +11,84 @@ void clearInputBuffer() {
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
-void addTreatment(){
-    if (treatmentCount >= MAX_TREATMENTS){
-        printf("Cannot add more treatments. \n");
+void generateTreatmentID(char *idBuffer, int index) {
+    sprintf(idBuffer, "T%03d", index + 1);
+}
+
+void loadTreatmentsFromCSV() {
+    FILE *fp = fopen(TREATMENTS_FILE, "r");
+    if (!fp) {
+        perror("Error opening treatments file");
+        return;
+    }
+
+    treatmentCount = 0;
+    while (fscanf(fp, "%19[^,],%19[^,],%199[^\n]\n",
+                  treatments[treatmentCount].id,
+                  treatments[treatmentCount].patientId,
+                  treatments[treatmentCount].description) == 3) {
+        treatmentCount++;
+        if (treatmentCount >= MAX_TREATMENTS) break;
+    }
+    fclose(fp);
+}
+
+void saveTreatmentsToCSV() {
+    FILE *fp = fopen(TREATMENTS_FILE, "w");
+    if (!fp) {
+        perror("Failed to write treatments file");
+        return;
+    }
+
+    for (int i = 0; i < treatmentCount; i++) {
+        fprintf(fp, "%s,%s,%s\n",
+                treatments[i].id,
+                treatments[i].patientId,
+                treatments[i].description);
+    }
+    fclose(fp);
+}
+
+void addTreatment() {
+    if (treatmentCount >= MAX_TREATMENTS) {
+        printf("Cannot add more treatments.\n");
         return;
     }
 
     Treatment t;
-    printf("Enter ID: ");
-    scanf("%d", &t.id);
-    clearInputBuffer();
+    generateTreatmentID(t.id, treatmentCount);
 
-    printf("Enter Name: ");
-    fgets(t.patientId, MAX_PATIENT_NAME, stdin);
+    printf("Enter Patient ID: ");
+    fgets(t.patientId, MAX_PATIENT_ID, stdin);
     t.patientId[strcspn(t.patientId, "\n")] = '\0';
 
-    treatments[treatmentCount++] = t;
-    print("Treatment added Successfully. \n");
+    printf("Enter Treatment Description: ");
+    fgets(t.description, MAX_TREATMENT_DESC, stdin);
+    t.description[strcspn(t.description, "\n")] = '\0';
 
+    treatments[treatmentCount++] = t;
+    saveTreatmentsToCSV();
+    printf("Treatment added successfully with ID: %s\n", t.id);
 }
 
-void viewTreatments(){
+void viewTreatments() {
     printf("\n--- Treatment List ---\n");
     for (int i = 0; i < treatmentCount; i++) {
-        printf("ID: %d\n", treatments[i].id);
-        printf("Patient_ID: %s\n", treatments[i].patientId);
-        printf("Description: %s\n", treatments[i].description);
+        printf("%s,%s,%s\n",
+               treatments[i].id,
+               treatments[i].patientId,
+               treatments[i].description);
     }
 }
 
-void updateTreatment(){
-    int id = 0;
-    int found = 0;
-    printf("Enter Treatment ID to Update");
-    scanf("%d", &id);
-    clearInputBuffer();
+void updateTreatment() {
+    char id[MAX_TREATMENT_ID];
+    printf("Enter Treatment ID to update: ");
+    fgets(id, MAX_TREATMENT_ID, stdin);
+    id[strcspn(id, "\n")] = '\0';
 
-    for (int i = 0; i < treatmentCount; i++){
-        if (treatments[i].id == id){
-            found = 1;  
+    for (int i = 0; i < treatmentCount; i++) {
+        if (strcmp(treatments[i].id, id) == 0) {
             printf("Enter new Patient ID: ");
             fgets(treatments[i].patientId, MAX_PATIENT_ID, stdin);
             treatments[i].patientId[strcspn(treatments[i].patientId, "\n")] = '\0';
@@ -59,76 +97,30 @@ void updateTreatment(){
             fgets(treatments[i].description, MAX_TREATMENT_DESC, stdin);
             treatments[i].description[strcspn(treatments[i].description, "\n")] = '\0';
 
-            printf("Treatment Update. \n");
-            break;
+            saveTreatmentsToCSV();
+            printf("Treatment updated.\n");
+            return;
         }
     }
-
-    if (!found){
-        printf("Treatment with ID %d not found. \n", id);
-    }
+    printf("Treatment with ID %s not found.\n", id);
 }
 
-void deleteTreatment(){
-    int id = 0;
-    int found = 0;
+void deleteTreatment() {
+    char id[MAX_TREATMENT_ID];
     printf("Enter Treatment ID to delete: ");
-    scanf("%d", &id);
-    clearInputBuffer();
+    fgets(id, MAX_TREATMENT_ID, stdin);
+    id[strcspn(id, "\n")] = '\0';
 
-    for(int i = 0; i < treatmentCount; i++){
-        if(treatments[i].id == id){
-            for(int j = i; j < treatmentCount - 1; j++){
+    for (int i = 0; i < treatmentCount; i++) {
+        if (strcmp(treatments[i].id, id) == 0) {
+            for (int j = i; j < treatmentCount - 1; j++) {
                 treatments[j] = treatments[j + 1];
             }
             treatmentCount--;
-            found =  1;
-            printf("Treatment Deleterd. \n");
-            break;
+            saveTreatmentsToCSV();
+            printf("Treatment deleted.\n");
+            return;
         }
     }
-
-    if (!found){
-        printf("Treatment with ID %d not found. \n", id);
-    }
+    printf("Treatment with ID %s not found.\n", id);
 }
-
-// CSV handling 
-
-void loadTreatmentsFromCSV(Treatment *treatments){
-    FILE *fp = fopen(TREATMENTS_FILE, "r");
-    if (fp == NULL){
-        perror("Fail to open a file");
-        return;
-    }
-
-    treatmentCount = 0;
-    while (fscanf(fp, "%d, %99[^,], %255[^,], \n", 
-        &treatments[treatmentCount].id, 
-        treatments[treatmentCount].patientId, 
-        treatments[treatmentCount].description) == 3){
-        treatmentCount++; 
-        if (treatmentCount >= MAX_TREATMENTS)
-        break;     
-    }
-    fclose(fp);
-}
-
-
-void saveTreatmentsToCSV(Treatment *treatments) {
-    FILE *fp = fopen(TREATMENTS_FILE, "w");
-    if (!fp) {
-        perror("Failed to write to file");
-        return;
-    }
-
-    for (int i = 0; i < treatmentCount; i++) {
-        fprintf(fp, "%d,%d,%s,\n",
-                treatments[i].id,
-                treatments[i].patientId,
-                treatments[i].description);
-    }
-
-    fclose(fp);
-}
-
