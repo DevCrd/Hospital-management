@@ -19,7 +19,7 @@ void deleteTreatment();
 
 // CSV handling 
 
-void loadTreatmentsFromCSV(Treatment *treatments);
-void saveTreatmentsToCSV(Treatment *treatments);
+void loadTreatmentsFromCSV();
+void saveTreatmentsToCSV();
 
 #endif
