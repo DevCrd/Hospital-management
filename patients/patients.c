@@ -85,32 +85,32 @@ void updatePatient(void) {
     Patient patients[500];
     size_t count = 0;
 
-    while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                  &patients[count].id, patients[count].name, &patients[count].age,
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
+                  patients[count].id, patients[count].name, &patients[count].age,
                   patients[count].gender, patients[count].address,
                   patients[count].phone, patients[count].email) == 7) {
         count++;
     }
     fclose(fp);
 
-    int id;
+    char id[20];
     printf("Enter Patient ID to update: ");
-    scanf("%d", &id);
+    scanf("%19s", id);
 
     for (size_t i = 0; i < count; i++) {
-        if (patients[i].id == id) {
+        if (strcmp(patients[i].id, id) == 0) {  // Compare strings
             printf("Enter new Name: ");
-            scanf("%s", patients[i].name);
+            scanf(" %99[^\n]", patients[i].name);
             printf("Enter new Age: ");
             scanf("%d", &patients[i].age);
             printf("Enter new Gender: ");
-            scanf("%s", patients[i].gender);
+            scanf("%19s", patients[i].gender);
             printf("Enter new Address: ");
-            scanf("%s", patients[i].address);
+            scanf(" %199[^\n]", patients[i].address);
             printf("Enter new Phone: ");
-            scanf("%s", patients[i].phone);
+            scanf("%19s", patients[i].phone);
             printf("Enter new Email: ");
-            scanf("%s", patients[i].email);
+            scanf("%99s", patients[i].email);
             break;
         }
     }
@@ -121,7 +121,7 @@ void updatePatient(void) {
         return;
     }
     for (size_t i = 0; i < count; i++) {
-        fprintf(fp, "%d,%s,%d,%s,%s,%s,%s\n",
+        fprintf(fp, "%s,%s,%d,%s,%s,%s,%s\n",
                 patients[i].id, patients[i].name, patients[i].age,
                 patients[i].gender, patients[i].address,
                 patients[i].phone, patients[i].email);
@@ -130,6 +130,7 @@ void updatePatient(void) {
 
     printf("Patient updated successfully.\n");
 }
+
 
 void deletePatient(void) {
     FILE *fp = fopen(PATIENTS_FILE, "r");
@@ -141,22 +142,21 @@ void deletePatient(void) {
     Patient patients[500];
     size_t count = 0;
 
-    while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                  &patients[count].id, patients[count].name, &patients[count].age,
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
+                  patients[count].id, patients[count].name, &patients[count].age,
                   patients[count].gender, patients[count].address,
                   patients[count].phone, patients[count].email) == 7) {
         count++;
     }
     fclose(fp);
 
-    int id;
+    char id[20];
     printf("Enter Patient ID to delete: ");
-    scanf("%d", &id);
+    scanf("%19s", id);
 
     size_t newCount = 0;
-
     for (size_t i = 0; i < count; i++) {
-        if (patients[i].id != id) {
+        if (strcmp(patients[i].id, id) != 0) {  // Compare strings
             patients[newCount++] = patients[i];
         }
     }
@@ -167,7 +167,7 @@ void deletePatient(void) {
         return;
     }
     for (size_t i = 0; i < newCount; i++) {
-        fprintf(fp, "%d,%s,%d,%s,%s,%s,%s\n",
+        fprintf(fp, "%s,%s,%d,%s,%s,%s,%s\n",
                 patients[i].id, patients[i].name, patients[i].age,
                 patients[i].gender, patients[i].address,
                 patients[i].phone, patients[i].email);
@@ -176,6 +176,7 @@ void deletePatient(void) {
 
     printf("Patient deleted successfully.\n");
 }
+
 
 void searchPatient(void) {
     FILE *fp = fopen(PATIENTS_FILE, "r");
@@ -192,11 +193,11 @@ void searchPatient(void) {
     int found = 0;
     printf("\n--- Search Results ---\n");
     
-    while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                  &patient.id, patient.name, &patient.age, patient.gender,
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
+                  patient.id, patient.name, &patient.age, patient.gender,
                   patient.address, patient.phone, patient.email) == 7) {
         if (strstr(patient.name, searchName) != NULL) {
-            printf("ID: %d | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
+            printf("ID: %s | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
                    patient.id, patient.name, patient.age, patient.gender,
                    patient.address, patient.phone, patient.email);
             found = 1;
@@ -210,6 +211,7 @@ void searchPatient(void) {
     fclose(fp);
 }
 
+
 void loadPatientsFromCSV(const char *filename) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -218,12 +220,14 @@ void loadPatientsFromCSV(const char *filename) {
     }
 
     Patient patient;
-    while (fscanf(fp, "%d,%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
-                  &patient.id, patient.name, &patient.age, patient.gender,
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
+                  patient.id, patient.name, &patient.age, patient.gender,
                   patient.address, patient.phone, patient.email) == 7) {
-        printf("ID: %d | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
+        printf("ID: %s | Name: %s | Age: %d | Gender: %s | Address: %s | Phone: %s | Email: %s\n",
                patient.id, patient.name, patient.age, patient.gender,
                patient.address, patient.phone, patient.email);
     }
     fclose(fp);
 }
+
+ 
