@@ -2,6 +2,10 @@
 
 #define APPOINTMENTS_FILE "appointments.csv"
 
+// Data storage
+Appointment appointments[100];
+int appointmentCount = 0;
+
 void addAppointment(void) {
     FILE *fp = fopen(APPOINTMENTS_FILE, "r");
     int lastId = 0;
