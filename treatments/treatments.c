@@ -55,6 +55,10 @@ void addTreatment() {
         return;
     }
 
+    // Flush input buffer
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+
     Treatment t;
     generateTreatmentID(t.id, treatmentCount);
 
@@ -62,9 +66,19 @@ void addTreatment() {
     fgets(t.patientId, MAX_PATIENT_ID, stdin);
     t.patientId[strcspn(t.patientId, "\n")] = '\0';
 
+    if (strlen(t.patientId) == 0) {
+        printf("Patient ID cannot be empty.\n");
+        return;
+    }
+
     printf("Enter Treatment Description: ");
     fgets(t.description, MAX_TREATMENT_DESC, stdin);
     t.description[strcspn(t.description, "\n")] = '\0';
+
+    if (strlen(t.description) == 0) {
+        printf("Description cannot be empty.\n");
+        return;
+    }
 
     treatments[treatmentCount++] = t;
     saveTreatmentsToCSV();
@@ -83,6 +97,11 @@ void viewTreatments() {
 
 void updateTreatment() {
     char id[MAX_TREATMENT_ID];
+
+    // Clear input buffer before reading
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+
     printf("Enter Treatment ID to update: ");
     fgets(id, MAX_TREATMENT_ID, stdin);
     id[strcspn(id, "\n")] = '\0';
@@ -107,6 +126,11 @@ void updateTreatment() {
 
 void deleteTreatment() {
     char id[MAX_TREATMENT_ID];
+
+    // Flush input buffer
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+
     printf("Enter Treatment ID to delete: ");
     fgets(id, MAX_TREATMENT_ID, stdin);
     id[strcspn(id, "\n")] = '\0';
