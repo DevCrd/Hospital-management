@@ -27,15 +27,16 @@ We use the `Makefile` to compile all modules into one executable.
 To compile:
 
 ```bash
-make
 
-This will produce an executable called: ***hospital***
+Run: make
+
+This will produce an executable called: ***hpms***
 
 ▶️ Running the Program
 
 Once compiled, run:
 
-./hospital
+./hpms
 
 📌 Function Prototypes
 
@@ -67,9 +68,9 @@ Call the new module’s function in main.c if needed.
 When running the program, you can choose options such as:
 
 === Hospital Management System ===
-1. Display Patients
-2. Display Treatments
-3. Display Appointments
+1. Manage Patients
+2. Manage Treatments
+3. Manage Appointments
 4. Exit
 Enter your choice:
 
