@@ -20,7 +20,7 @@
 #define MAX_DATE_LEN 20
 #define MAX_TIME_LEN 10
 #define MAX_DOCTOR_NAME 20
-    
+#define MAX_TREATMENTS 100
 
 // Structs
 typedef struct {
