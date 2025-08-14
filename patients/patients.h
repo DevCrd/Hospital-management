@@ -1,8 +1,7 @@
 #ifndef PATIENTS_H
 #define PATIENTS_H
 
-#include "../manager.h" // for Appointment struct and shared constants
-
+#include "../manager.h" // for Patients struct and shared constants
 
 
 // ==========================

@@ -1,6 +1,10 @@
-#include "manager.h"
+#include "patients.h"
 
 #define PATIENTS_FILE "patients.csv"
+
+// Data storage
+Patient patients[50];
+int patientCount = 0;
 
 void addPatient(void) {
     FILE *fp = fopen(PATIENTS_FILE, "r");
@@ -177,7 +181,7 @@ void searchPatient(void) {
         return;
     }
 
-    char searchName[MAX_NAME_LENGTH];
+    char searchName[MAX_PATIENT_NAME];
     printf("Enter name to search for: ");
     scanf("%s", searchName);
 
