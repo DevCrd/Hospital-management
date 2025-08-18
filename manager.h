@@ -42,8 +42,8 @@ typedef struct {
 } Treatment;
 
 typedef struct {
-    int id;
-    int patientId;
+    char id[MAX_APPOINTMENT_ID];
+    char patientId[MAX_PATIENT_ID];;
     char date[MAX_DATE_LEN];
     char time[MAX_TIME_LEN];
     char doctor[MAX_DOCTOR_NAME];
