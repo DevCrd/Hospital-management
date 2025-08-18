@@ -6,27 +6,59 @@
 Appointment appointments[100];
 int appointmentCount = 0;
 
-void addAppointment(void) {
+void generateNewAppointmentId(char *newId) {
     FILE *fp = fopen(APPOINTMENTS_FILE, "r");
-    int lastId = 0;
+    int maxId = 0;
 
     if (fp) {
         Appointment temp;
-        while (fscanf(fp, "%d,%d,%19[^,],%9[^,],%99[^,],%199[^\n]\n",
-                      &temp.id, &temp.patientId, temp.date,
+        while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                      temp.id, temp.patientId, temp.date,
                       temp.time, temp.doctor, temp.description) == 6) {
-            if (temp.id > lastId) {
-                lastId = temp.id;
+            int num = 0;
+            if (sscanf(temp.id, "A%d", &num) == 1 && num > maxId) {
+                maxId = num;
             }
         }
         fclose(fp);
     }
 
-    Appointment appt;
-    appt.id = lastId + 1; // ID is based on the appointment index
+    sprintf(newId, "A%03d", maxId + 1);
+}
 
-    printf("Enter Patient ID: ");
-    scanf("%d", &appt.patientId);
+void addAppointment(void) {
+    Appointment appt;
+    generateNewAppointmentId(appt.id); 
+
+    printf("Enter Patient ID (e.g., P001): ");
+    scanf("%s", appt.patientId);
+
+    int patientFound = 0;
+    FILE *fp = fopen("patients.csv", "r");
+    if (!fp) {
+        perror("Error opening patients file");
+        return;
+    }
+
+    Patient tempPatient;
+    while (fscanf(fp, "%19[^,],%99[^,],%d,%7[^,],%19[^,],%19[^,],%19[^\n]\n",
+                  tempPatient.id, tempPatient.name, &tempPatient.age,
+                  tempPatient.gender, tempPatient.address,
+                  tempPatient.phone, tempPatient.email) == 4) {
+        
+        if (strcmp(tempPatient.id, appt.patientId) == 0) {
+            patientFound = 1;
+            break;
+        }
+    }
+    fclose(fp);
+    // printf("Comparing: tempPatient.id = '%s' | appt.patientId = '%s'\n",
+    //     tempPatient.id, appt.patientId);
+    if (!patientFound) {
+        printf("Error: Patient with ID %s does not exist. Appointment not added.\n", appt.patientId);
+        return;
+    }
+
     printf("Enter Date (YYYY-MM-DD): ");
     scanf("%s", appt.date);
     printf("Enter Time (HH:MM): ");
@@ -34,9 +66,9 @@ void addAppointment(void) {
     printf("Enter Doctor: ");
     scanf("%s", appt.doctor);
     printf("Enter Description: ");
-    getchar(); 
+    getchar();
     fgets(appt.description, MAX_APPOINTMENT_DESC, stdin);
-    appt.description[strcspn(appt.description, "\n")] = 0; 
+    appt.description[strcspn(appt.description, "\n")] = 0;
 
     fp = fopen(APPOINTMENTS_FILE, "a");
     if (!fp) {
@@ -44,14 +76,13 @@ void addAppointment(void) {
         return;
     }
 
-    fprintf(fp, "%d,%d,%s,%s,%s,%s\n",
+    fprintf(fp, "%s,%s,%s,%s,%s,%s\n",
             appt.id, appt.patientId, appt.date,
             appt.time, appt.doctor, appt.description);
 
     fclose(fp);
-    printf("Appointment added successfully with ID: %d\n", appt.id);
+    printf("Appointment added successfully with ID: %s\n", appt.id);
 }
-
 
 void viewAppointments(void) {
     FILE *fp = fopen(APPOINTMENTS_FILE, "r");
@@ -62,10 +93,10 @@ void viewAppointments(void) {
 
     Appointment appt;
     printf("\n--- Appointment List ---\n");
-    while (fscanf(fp, "%d,%d,%19[^,],%9[^,],%99[^,],%199[^\n]\n",
-                  &appt.id, &appt.patientId, appt.date, appt.time,
+    while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                  appt.id, appt.patientId, appt.date, appt.time,
                   appt.doctor, appt.description) == 6) {
-        printf("ID: %d | Patient ID: %d | Date: %s | Time: %s | Doctor: %s | Desc: %s\n",
+        printf("ID: %s | Patient ID: %s | Date: %s | Time: %s | Doctor: %s | Desc: %s\n",
                appt.id, appt.patientId, appt.date, appt.time, appt.doctor, appt.description);
     }
 
@@ -82,19 +113,19 @@ void updateAppointment(void) {
     Appointment appts[500];
     size_t count = 0;
 
-    while (fscanf(fp, "%d,%d,%19[^,],%9[^,],%99[^,],%199[^\n]\n",
-                  &appts[count].id, &appts[count].patientId, appts[count].date,
+    while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                  appts[count].id, appts[count].patientId, appts[count].date,
                   appts[count].time, appts[count].doctor, appts[count].description) == 6) {
         count++;
     }
     fclose(fp);
 
-    int id;
+    char id[MAX_APPOINTMENT_ID];
     printf("Enter Appointment ID to update: ");
-    scanf("%d", &id);
+    scanf("%s", id);
 
     for (size_t i = 0; i < count; i++) {
-        if (appts[i].id == id) {
+        if (strcmp(appts[i].id, id) == 0) {
             printf("Enter new Date (YYYY-MM-DD): ");
             scanf("%s", appts[i].date);
             printf("Enter new Time (HH:MM): ");
@@ -115,7 +146,7 @@ void updateAppointment(void) {
         return;
     }
     for (size_t i = 0; i < count; i++) {
-        fprintf(fp, "%d,%d,%s,%s,%s,%s\n",
+        fprintf(fp, "%s,%s,%s,%s,%s,%s\n",
                 appts[i].id, appts[i].patientId, appts[i].date,
                 appts[i].time, appts[i].doctor, appts[i].description);
     }
@@ -134,21 +165,20 @@ void deleteAppointment(void) {
     Appointment appts[500];
     size_t count = 0;
 
-    while (fscanf(fp, "%d,%d,%19[^,],%9[^,],%99[^,],%199[^\n]\n",
-                  &appts[count].id, &appts[count].patientId, appts[count].date,
+    while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                  appts[count].id, appts[count].patientId, appts[count].date,
                   appts[count].time, appts[count].doctor, appts[count].description) == 6) {
         count++;
     }
     fclose(fp);
 
-    int id;
+    char id[MAX_APPOINTMENT_ID];
     printf("Enter Appointment ID to delete: ");
-    scanf("%d", &id);
+    scanf("%s", id);
 
     size_t newCount = 0;
-
     for (size_t i = 0; i < count; i++) {
-        if (appts[i].id != id) {
+        if (strcmp(appts[i].id, id) != 0) {
             appts[newCount++] = appts[i];
         }
     }
@@ -159,7 +189,7 @@ void deleteAppointment(void) {
         return;
     }
     for (size_t i = 0; i < newCount; i++) {
-        fprintf(fp, "%d,%d,%s,%s,%s,%s\n",
+        fprintf(fp, "%s,%s,%s,%s,%s,%s\n",
                 appts[i].id, appts[i].patientId, appts[i].date,
                 appts[i].time, appts[i].doctor, appts[i].description);
     }
@@ -176,13 +206,11 @@ void loadAppointmentsFromCSV(const char *filename) {
     }
 
     Appointment appt;
-    while (fscanf(fp, "%d,%d,%19[^,],%9[^,],%99[^,],%199[^\n]\n",
-                  &appt.id, &appt.patientId, appt.date, appt.time,
+    while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                  appt.id, appt.patientId, appt.date, appt.time,
                   appt.doctor, appt.description) == 6) {
-        printf("ID: %d | Patient ID: %d | Date: %s | Time: %s | Doctor: %s | Desc: %s\n",
+        printf("ID: %s | Patient ID: %s | Date: %s | Time: %s | Doctor: %s | Desc: %s\n",
                appt.id, appt.patientId, appt.date, appt.time, appt.doctor, appt.description);
     }
     fclose(fp);
 }
-
-
