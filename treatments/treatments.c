@@ -62,32 +62,6 @@ void addTreatment() {
     fgets(t.patientId, MAX_PATIENT_ID, stdin);
     t.patientId[strcspn(t.patientId, "\n")] = '\0';
 
-    int patientFound = 0;
-    FILE *fp = fopen("patients.csv", "r");
-    if (!fp) {
-        perror("Error opening patients file");
-        return;
-    }
-
-    Patient tempPatient;
-    while (fscanf(fp, "%19[^,],%99[^,],%d,%7[^,],%19[^,],%19[^,],%19[^\n]\n",
-                  tempPatient.id, tempPatient.name, &tempPatient.age,
-                  tempPatient.gender, tempPatient.address,
-                  tempPatient.phone, tempPatient.email) == 4) {
-        
-        if (strcmp(tempPatient.id, appt.patientId) == 0) {
-            patientFound = 1;
-            break;
-        }
-    }
-    fclose(fp);
-
-    
-    if (!patientFound) {
-        printf("Error: Patient with ID %s does not exist. Appointment not added.\n", appt.patientId);
-        return;
-    }
-
     printf("Enter Treatment Description: ");
     fgets(t.description, MAX_TREATMENT_DESC, stdin);
     t.description[strcspn(t.description, "\n")] = '\0';
