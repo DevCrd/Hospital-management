@@ -25,7 +25,7 @@ void addPatient(void) {
     }
 
     Patient patient;
-    sprintf(patient.id, "P%03d", lastIdNum + 1); 
+    sprintf(patient.id, "P%03d", lastIdNum + 1);
 
     printf("Enter Name: ");
     scanf(" %99[^\n]", patient.name);
@@ -97,22 +97,86 @@ void updatePatient(void) {
     printf("Enter Patient ID to update: ");
     scanf("%19s", id);
 
+    int patientFound = 0;
     for (size_t i = 0; i < count; i++) {
         if (strcmp(patients[i].id, id) == 0) {  // Compare strings
-            printf("Enter new Name: ");
-            scanf(" %99[^\n]", patients[i].name);
-            printf("Enter new Age: ");
-            scanf("%d", &patients[i].age);
-            printf("Enter new Gender: ");
-            scanf("%19s", patients[i].gender);
-            printf("Enter new Address: ");
-            scanf(" %199[^\n]", patients[i].address);
-            printf("Enter new Phone: ");
-            scanf("%19s", patients[i].phone);
-            printf("Enter new Email: ");
-            scanf("%99s", patients[i].email);
+            patientFound = 1;
+            printf("\n--- Updating Patient: %s ---\n", patients[i].id);
+
+            // Clear the input buffer
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+
+            // Update Name
+            char tempInput[100];
+            printf("Current Name: %s\n", patients[i].name);
+            printf("Enter new Name (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                // Remove newline character
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                // Only update if user entered something
+                if (strlen(tempInput) > 0) {
+                    strcpy(patients[i].name, tempInput);
+                }
+            }
+
+            // Update Age
+            printf("Current Age: %d\n", patients[i].age);
+            printf("Enter new Age (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                if (strlen(tempInput) > 0) {
+                    patients[i].age = atoi(tempInput);
+                }
+            }
+
+            // Update Gender
+            printf("Current Gender: %s\n", patients[i].gender);
+            printf("Enter new Gender (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                if (strlen(tempInput) > 0) {
+                    strcpy(patients[i].gender, tempInput);
+                }
+            }
+
+            // Update Address
+            printf("Current Address: %s\n", patients[i].address);
+            printf("Enter new Address (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                if (strlen(tempInput) > 0) {
+                    strcpy(patients[i].address, tempInput);
+                }
+            }
+
+            // Update Phone
+            printf("Current Phone: %s\n", patients[i].phone);
+            printf("Enter new Phone (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                if (strlen(tempInput) > 0) {
+                    strcpy(patients[i].phone, tempInput);
+                }
+            }
+
+            // Update Email
+            printf("Current Email: %s\n", patients[i].email);
+            printf("Enter new Email (press Enter to keep current): ");
+            if (fgets(tempInput, sizeof(tempInput), stdin) != NULL) {
+                tempInput[strcspn(tempInput, "\n")] = 0;
+                if (strlen(tempInput) > 0) {
+                    strcpy(patients[i].email, tempInput);
+                }
+            }
+
             break;
         }
+    }
+
+    if (!patientFound) {
+        printf("Patient with ID '%s' not found.\n", id);
+        return;
     }
 
     fp = fopen(PATIENTS_FILE, "w");
@@ -130,7 +194,6 @@ void updatePatient(void) {
 
     printf("Patient updated successfully.\n");
 }
-
 
 void deletePatient(void) {
     FILE *fp = fopen(PATIENTS_FILE, "r");
@@ -192,7 +255,7 @@ void searchPatient(void) {
     Patient patient;
     int found = 0;
     printf("\n--- Search Results ---\n");
-    
+
     while (fscanf(fp, "%19[^,],%99[^,],%d,%19[^,],%199[^,],%19[^,],%99[^\n]\n",
                   patient.id, patient.name, &patient.age, patient.gender,
                   patient.address, patient.phone, patient.email) == 7) {
@@ -229,5 +292,3 @@ void loadPatientsFromCSV(const char *filename) {
     }
     fclose(fp);
 }
-
- 
