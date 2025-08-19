@@ -136,10 +136,6 @@ FUNCTION viewTreatment():
 END FUNCTION
 
 
-FUNCTION freeAll():
-    FREE all memory allocated for patient_list and appointment_list
-END FUNCTION
-
 MAIN:
     CALL loadDataFromCSV("patients/patients.csv", "patients/appointments.csv")
 
@@ -157,7 +153,6 @@ MAIN:
             CASE 7: CALL viewTreatmentHistory()
             CASE 8:
                 CALL saveDataToCSV()
-                CALL freeAll()
                 EXIT LOOP
             DEFAULT:
                 DISPLAY "Invalid choice"
