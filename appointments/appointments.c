@@ -6,6 +6,12 @@
 Appointment appointments[100];
 int appointmentCount = 0;
 
+void trimNewline(char *str) {
+    size_t len = strlen(str);
+    if (len > 0 && str[len-1] == '\n') {
+        str[len-1] = '\0';
+    }
+}
 void generateNewAppointmentId(char *newId) {
     FILE *fp = fopen(APPOINTMENTS_FILE, "r");
     int maxId = 0;
@@ -44,7 +50,7 @@ void addAppointment(void) {
     while (fscanf(fp, "%19[^,],%99[^,],%d,%7[^,],%19[^,],%19[^,],%19[^\n]\n",
                   tempPatient.id, tempPatient.name, &tempPatient.age,
                   tempPatient.gender, tempPatient.address,
-                  tempPatient.phone, tempPatient.email) == 4) {
+                  tempPatient.phone, tempPatient.email) == 6) {
         
         if (strcmp(tempPatient.id, appt.patientId) == 0) {
             patientFound = 1;
@@ -64,13 +70,16 @@ void addAppointment(void) {
     printf("Enter Time (HH:MM): ");
     scanf("%s", appt.time);
     printf("Enter Doctor: ");
-    scanf("%s", appt.doctor);
+    getchar();
+    fgets(appt.doctor, sizeof(appt.doctor), stdin);
+    trimNewline(appt.doctor);
     printf("Enter Description: ");
     getchar();
     fgets(appt.description, MAX_APPOINTMENT_DESC, stdin);
-    appt.description[strcspn(appt.description, "\n")] = 0;
+    trimNewline(appt.description);
 
-    fp = fopen(APPOINTMENTS_FILE, "a");
+
+    fp = fopen(APPOINTMENTS_FILE, "a"); 
     if (!fp) {
         perror("Error opening appointments file");
         return;
@@ -123,19 +132,38 @@ void updateAppointment(void) {
     char id[MAX_APPOINTMENT_ID];
     printf("Enter Appointment ID to update: ");
     scanf("%s", id);
+    getchar();
 
     for (size_t i = 0; i < count; i++) {
         if (strcmp(appts[i].id, id) == 0) {
-            printf("Enter new Date (YYYY-MM-DD): ");
-            scanf("%s", appts[i].date);
-            printf("Enter new Time (HH:MM): ");
-            scanf("%s", appts[i].time);
-            printf("Enter new Doctor: ");
-            scanf("%s", appts[i].doctor);
-            printf("Enter new Description: ");
-            getchar();
-            fgets(appts[i].description, MAX_APPOINTMENT_DESC, stdin);
-            appts[i].description[strcspn(appts[i].description, "\n")] = 0;
+            char buffer[256];
+
+            printf("Enter new Date (YYYY-MM-DD) [%s]: ", appts[i].date);
+            if (fgets(buffer, sizeof(buffer), stdin) && buffer[0] != '\n') {
+                trimNewline(buffer);
+                strncpy(appts[i].date, buffer, sizeof(appts[i].date));
+            }
+            // scanf("%s", appts[i].date); // we can't use scanf for the operation because it skips whitespace change it to fget
+
+            printf("Enter new Time (HH:MM) [%s]: ", appts[i].time);
+            if (fgets(buffer, sizeof(buffer), stdin) && buffer[0] != '\n') {
+                trimNewline(buffer);
+                strncpy(appts[i].time, buffer, sizeof(appts[i].time));
+            }
+
+            printf("Enter new Doctor [%s]: ", appts[i].doctor);
+            if (fgets(buffer, sizeof(buffer), stdin) && buffer[0] != '\n') {
+                trimNewline(buffer);
+                strncpy(appts[i].doctor, buffer, sizeof(appts[i].doctor)-1);
+                appts[i].doctor[sizeof(appts[i].doctor)-1] = '\0';
+            }
+
+            printf("Enter new Description [%s]: ", appts[i].description);
+            if (fgets(buffer, sizeof(buffer), stdin) && buffer[0] != '\n') {
+                trimNewline(buffer);
+                strncpy(appts[i].description, buffer, sizeof(appts[i].description));
+            }
+
             break;
         }
     }
