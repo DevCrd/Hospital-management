@@ -6,12 +6,6 @@
 Appointment appointments[100];
 int appointmentCount = 0;
 
-void trimNewline(char *str) {
-    size_t len = strlen(str);
-    if (len > 0 && str[len-1] == '\n') {
-        str[len-1] = '\0';
-    }
-}
 void generateNewAppointmentId(char *newId) {
     FILE *fp = fopen(APPOINTMENTS_FILE, "r");
     int maxId = 0;

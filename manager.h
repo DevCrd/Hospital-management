@@ -50,6 +50,8 @@ typedef struct {
     char description[MAX_APPOINTMENT_DESC]; 
 } Appointment;
 
+void trimNewline(char *str);
+
 // Menu management functions
 void managePatients();
 void manageAppointments();
