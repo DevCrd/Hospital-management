@@ -15,6 +15,8 @@ void updateAppointment(void);
 
 void deleteAppointment(void);
 
+void searchAppointmentsByPatientId(void);
+
 // CSV handling
 
 void loadAppointmentsFromCSV(const char *filename);

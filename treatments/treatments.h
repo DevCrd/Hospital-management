@@ -17,6 +17,9 @@ void updateTreatment();
 
 void deleteTreatment();
 
+void searchTreatmentsByPatientId();
+
+
 // CSV handling 
 
 void loadTreatmentsFromCSV();

@@ -44,7 +44,7 @@ void addAppointment(void) {
     while (fscanf(fp, "%19[^,],%99[^,],%d,%7[^,],%19[^,],%19[^,],%19[^\n]\n",
                   tempPatient.id, tempPatient.name, &tempPatient.age,
                   tempPatient.gender, tempPatient.address,
-                  tempPatient.phone, tempPatient.email) == 6) {
+                  tempPatient.phone, tempPatient.email) == 7) {
         
         if (strcmp(tempPatient.id, appt.patientId) == 0) {
             patientFound = 1;
@@ -218,6 +218,42 @@ void deleteAppointment(void) {
     fclose(fp);
 
     printf("Appointment deleted successfully.\n");
+}
+
+
+void searchAppointmentsByPatientId() {
+    char patientId[MAX_PATIENT_ID];
+    int found = 0;
+
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); // clear buffer
+
+    printf("Enter Patient ID to search appointments: ");
+    fgets(patientId, sizeof(patientId), stdin);
+    trimNewline(patientId);
+
+    FILE *fp = fopen(APPOINTMENTS_FILE, "r");
+    if (!fp) {
+        perror("Error opening appointments file");
+        return;
+    }
+
+    Appointment appt;
+    printf("\n--- Appointments for Patient %s ---\n", patientId);
+    while (fscanf(fp, "%19[^,],%19[^,],%19[^,],%9[^,],%19[^,],%199[^\n]\n",
+                  appt.id, appt.patientId, appt.date, appt.time,
+                  appt.doctor, appt.description) == 6) {
+        if (strcmp(appt.patientId, patientId) == 0) {
+            printf("ID: %s | Date: %s | Time: %s | Doctor: %s | Desc: %s\n",
+                   appt.id, appt.date, appt.time, appt.doctor, appt.description);
+            found = 1;
+        }
+    }
+    fclose(fp);
+
+    if (!found) {
+        printf("No appointments found for patient ID %s.\n", patientId);
+    }
 }
 
 void loadAppointmentsFromCSV(const char *filename) {
