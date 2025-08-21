@@ -190,3 +190,30 @@ void deleteTreatment() {
     }
     printf("Treatment with ID %s not found.\n", id);
 }
+
+void searchTreatmentsByPatientId() {
+    char patientId[MAX_PATIENT_ID];
+    int found = 0;
+
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF); // clear buffer
+
+    printf("Enter Patient ID to search treatments: ");
+    fgets(patientId, sizeof(patientId), stdin);
+    trimNewline(patientId);
+
+    loadTreatmentsFromCSV();
+
+    printf("\n--- Treatments for Patient %s ---\n", patientId);
+    for (int i = 0; i < treatmentCount; i++) {
+        if (strcmp(treatments[i].patientId, patientId) == 0) {
+            printf("ID: %s | Description: %s\n",
+                   treatments[i].id, treatments[i].description);
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("No treatments found for patient ID %s.\n", patientId);
+    }
+}

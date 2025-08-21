@@ -33,6 +33,7 @@ void manageAppointments() {
         printf("2. View Appointments\n");
         printf("3. Update Appointment\n");
         printf("4. Delete Appointment\n");
+        printf("5. Search Appointments by Patient ID\n");
         printf("0. Back to Main Menu\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
@@ -42,6 +43,7 @@ void manageAppointments() {
             case 2: viewAppointments(); break;
             case 3: updateAppointment(); break;
             case 4: deleteAppointment(); break;
+            case 5: searchAppointmentsByPatientId(); break;
         }
     } while (choice != 0);
 }
@@ -54,6 +56,7 @@ void manageTreatments() {
         printf("2. View Treatments\n");
         printf("3. Update Treatment\n");
         printf("4. Delete Treatment\n");
+        printf("5. Search Treatments by Patient ID\n"); 
         printf("0. Back to Main Menu\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
@@ -63,6 +66,7 @@ void manageTreatments() {
             case 2: viewTreatments(); break;
             case 3: updateTreatment(); break;
             case 4: deleteTreatment(); break;
+            case 5: searchTreatmentsByPatientId(); break;
         }
     } while (choice != 0);
 }
