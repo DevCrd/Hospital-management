@@ -16,6 +16,9 @@ void updatePatient();
 
 void deletePatient();
 
+void searchPatient();
+
+
 // CSV handling
 
 void loadPatientsFromCSV(const char *filename);

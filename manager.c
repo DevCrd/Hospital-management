@@ -12,6 +12,7 @@ void managePatients() {
         printf("2. View Patients\n");
         printf("3. Update Patient\n");
         printf("4. Delete Patient\n");
+        printf("5. Search Patient by Name\n");
         printf("0. Back to Main Menu\n");
         printf("Enter choice: ");
         scanf("%d", &choice);
@@ -21,6 +22,7 @@ void managePatients() {
             case 2: viewPatients(); break;
             case 3: updatePatient(); break;
             case 4: deletePatient(); break;
+            case 5: searchPatient(); break;
         }
     } while (choice != 0);
 }
