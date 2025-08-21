@@ -232,7 +232,7 @@ void searchAppointmentsByPatientId() {
     fgets(patientId, sizeof(patientId), stdin);
     trimNewline(patientId);
 
-    FILE *fp = fopen(APPOINTMENTS_FILE, "r");
+    FILE *fp = fopen(APPOINTMENTS_FILE, "r");  
     if (!fp) {
         perror("Error opening appointments file");
         return;
